@@ -4,8 +4,11 @@ import java.nio.file.Paths;
 
 public class MainClient {
     public static void main(String[] args) {
-        FileMessage fileMessage = new FileMessage(Paths.get("client/newFile.txt"));
-        binaryVersion(fileMessage);
+        Client client = new Client();
+        client.connect();
+
+//        FileMessage fileMessage = new FileMessage(Paths.get("client/newFile.txt"));
+//        binaryVersion(fileMessage);
     }
 
     private static void binaryVersion( FileMessage fileMessage ) {

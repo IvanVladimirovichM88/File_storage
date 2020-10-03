@@ -65,6 +65,23 @@ public class FileMessage implements Serializable {
         }
     }
 
+    public void acceptFileMessageNew(DataInputStream inputStream){
+        try {
+            short lenFileName = inputStream.readShort();
+            byte[] bytesFilename = new byte[lenFileName];
+            inputStream.read(bytesFilename);
+            fileName = new String(bytesFilename);
+            size = inputStream.readLong();
+            try(OutputStream outFile = new BufferedOutputStream(new FileOutputStream("server/"+fileName))){
+                for(int i=0; i<size; i++ ){
+                    outFile.write(inputStream.read());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public String getFileName() {
         return fileName;
     }
