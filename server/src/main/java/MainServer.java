@@ -19,13 +19,13 @@ public class MainServer {
 //        }
     }
 
-    private static void binaryVersion(ServerSocket serverSocket){
-        try(Socket socket = serverSocket.accept()){
-            FileMessage fileMessage = new FileMessage();
-            fileMessage.acceptFileMessage(socket);
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-    }
+//    private static void binaryVersion(ServerSocket serverSocket){
+//        try(Socket socket = serverSocket.accept()){
+//            FileMessage fileMessage = new FileMessage();
+//            fileMessage.acceptFileMessage(socket);
+//        }catch (IOException e){
+//            e.printStackTrace();
+//        }
+//    }
 
 }

@@ -2,13 +2,15 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class ClientHandler {
     private Socket socket;
     private DataInputStream in;
     private DataOutputStream out;
     private Server server;
-    private int userId = -1;
+    private int userId;
 
     public ClientHandler(Server server, Socket socket) {
         try {
@@ -16,6 +18,7 @@ public class ClientHandler {
             this.server = server;
             this.in = new DataInputStream(socket.getInputStream());
             this.out = new DataOutputStream(socket.getOutputStream());
+            userId = -1;
 
             new Thread(new Runnable() {
                 @Override
@@ -31,8 +34,13 @@ public class ClientHandler {
                                 );
                                 if (userId > 0){
                                     out.writeInt(userId);
-                                    sendMsg("Authorized - OK");
                                     server.addClient( ClientHandler.this );
+
+                                    //проверяем существует ли для данного клиента каталог
+                                    if ( !(Files.exists(Paths.get("server/"+userId))) ){
+                                        // создаем отдельную директорию для каждого клиета
+                                        Files.createDirectory(Paths.get("server/"+userId));
+                                    }
                                     break;
                                 }else {
                                     out.writeInt(-1);
@@ -42,9 +50,17 @@ public class ClientHandler {
                         // come here when authorize is OK
                         while (true) {
                             byte command = in.readByte();
-                            if (command == 70){
+                            if (command == 70){ // command for send file
                                 FileMessage fileMessage= new FileMessage();
-                                fileMessage.acceptFileMessageNew(in);
+                                String fileName = fileMessage.acceptFileMessage(in,userId);
+
+                                if (fileName != null) {
+                                    AuthService.putFileNameInTable(fileName, userId);
+                                }
+
+                            }else if( command == 83){ // command for show all files
+
+                                CommandMessage.sendAllFiles( AuthService.getAllFileForUser(userId),out );
                             }
                         }
 

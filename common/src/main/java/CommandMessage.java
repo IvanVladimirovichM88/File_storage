@@ -1,6 +1,7 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 public class CommandMessage {
 
@@ -16,6 +17,7 @@ public class CommandMessage {
             out.writeShort((short)userPassword.length());
             //send password
             out.write(userPassword.getBytes());
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -39,5 +41,41 @@ public class CommandMessage {
             e.printStackTrace();
         }
         return ret;
+    }
+
+    public static void sendAllFiles(List<String> fileNames, DataOutputStream out) throws IOException {
+
+        out.writeInt(fileNames.size());
+
+        for (String s : fileNames) {
+            out.writeInt(s.length());
+            out.write(s.getBytes());
+        }
+    }
+
+    public static String[] acceptAllFiles(DataInputStream in) throws IOException {
+
+        int size = in.readInt();
+        int lenFileName;
+        if ( size != 0) {
+            String[] allFileNames = new String[size];
+            for (int i =0; i< size; i++){
+                lenFileName = in.readInt();
+                byte[] byteFileName = new byte [lenFileName];
+                in.read(byteFileName);
+                allFileNames[i] = new String(byteFileName);
+            }
+            return allFileNames;
+        }
+        return null;
+    }
+
+    public static void requestAllFiles(DataOutputStream out){
+
+        try {
+            out.write(83);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

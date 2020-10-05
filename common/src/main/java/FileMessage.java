@@ -9,6 +9,8 @@ public class FileMessage implements Serializable {
     private String fileName;
     private long size;
     private final int bufferLen = 1024;
+    private final String serverMainCatalog = "server/";
+    private final String clientMainCatalog = "client/";
 
     public FileMessage(){}
 
@@ -35,7 +37,7 @@ public class FileMessage implements Serializable {
             out.writeLong(size);
             //send file content
             byte[] buffer = new byte[bufferLen];
-            try (InputStream in = new FileInputStream("client/" +fileName)){
+            try (InputStream in = new FileInputStream(clientMainCatalog + fileName)){
                 int n;
                 while ((n = in.read(buffer)) != -1){
                     out.write(buffer, 0, n);
@@ -46,40 +48,27 @@ public class FileMessage implements Serializable {
         }
     }
 
-    public void acceptFileMessage(Socket socket){
+    public String acceptFileMessage(DataInputStream inputStream, int userId){
         try {
-            DataInputStream inputStream = new DataInputStream((socket.getInputStream()));
-            byte command = inputStream.readByte();
             short lenFileName = inputStream.readShort();
             byte[] bytesFilename = new byte[lenFileName];
             inputStream.read(bytesFilename);
             fileName = new String(bytesFilename);
             size = inputStream.readLong();
-            try(OutputStream outFile = new BufferedOutputStream(new FileOutputStream("server/"+fileName))){
-                for(int i=0; i<size; i++ ){
-                    outFile.write(inputStream.read());
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+            //проверяем существует ли каталог для пользователя
 
-    public void acceptFileMessageNew(DataInputStream inputStream){
-        try {
-            short lenFileName = inputStream.readShort();
-            byte[] bytesFilename = new byte[lenFileName];
-            inputStream.read(bytesFilename);
-            fileName = new String(bytesFilename);
-            size = inputStream.readLong();
-            try(OutputStream outFile = new BufferedOutputStream(new FileOutputStream("server/"+fileName))){
+            String fullFileName = serverMainCatalog + userId + "/" + fileName;
+            try(OutputStream outFile = new BufferedOutputStream(new FileOutputStream( fullFileName ))){
                 for(int i=0; i<size; i++ ){
                     outFile.write(inputStream.read());
                 }
             }
+            return fullFileName;
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     public String getFileName() {

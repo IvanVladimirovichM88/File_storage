@@ -1,4 +1,6 @@
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AuthService {
     private static Connection connection;
@@ -34,6 +36,39 @@ public class AuthService {
             e.printStackTrace();
         }
         return -1;
+    }
+
+    public static void putFileNameInTable(String fileName, int userId){
+        String sql = String.format("INSERT INTO `file_storage_db`.`file_name_tbl` (`file_name_fld`, `user_id`) " +
+                "VALUES ('%s', '%d');", fileName, userId);
+
+        try {
+            statement.executeUpdate(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static List<String> getAllFileForUser(int userId){
+        ArrayList<String> fileNames = new ArrayList<>();
+
+        String sql = String.format("SELECT file_name_fld " +
+                " FROM file_name_tbl " +
+                " WHERE user_id = '%d';", userId);
+
+        try {
+            ResultSet rs = statement.executeQuery(sql);
+            while(rs.next()){
+                fileNames.add(rs.getString("file_name_fld"));
+            }
+
+            return fileNames;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     public static void disconnect(){
