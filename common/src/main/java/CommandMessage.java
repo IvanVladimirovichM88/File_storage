@@ -23,7 +23,6 @@ public class CommandMessage {
         }
     }
 
-
     public static String[] acceptAuthorized(DataInputStream in){
         String[] ret = new String[2];
         try {
@@ -77,5 +76,42 @@ public class CommandMessage {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void requestFileDelete(DataOutputStream out, String fileName){
+        try {
+            out.write(68);
+            out.writeInt(fileName.length());
+            out.write(fileName.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String acceptDeleteFile(DataInputStream in){
+        int lenFileName = 0;
+        String fileName = null;
+        try {
+            lenFileName = in.readShort();
+            byte[] byteFileName = new byte[lenFileName];
+            in.read(byteFileName);
+            fileName = new String(byteFileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return fileName;
+    }
+
+    public static void sendDeleteFile(DataOutputStream out, String fileName){
+        try {
+
+            out.writeByte(68);
+            out.writeShort((short) fileName.length());
+            out.write(fileName.getBytes());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

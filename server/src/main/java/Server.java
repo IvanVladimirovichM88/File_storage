@@ -27,18 +27,18 @@ public class Server {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-        try {
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                server.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+                AuthService.disconnect();
         }
-        try {
-            server.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        AuthService.disconnect();
-    }
 
     }
 

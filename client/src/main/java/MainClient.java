@@ -10,6 +10,14 @@ public class MainClient {
 
         client.showAllFiles();
 
+        System.out.println();
+
+        client.deleteFile(Paths.get("client/newFile.txt"));
+
+        System.out.println();
+
+        client.showAllFiles();
+
        // client.sendFile(Paths.get("client/newFile.txt"));
 
 
@@ -18,11 +26,4 @@ public class MainClient {
 //        binaryVersion(fileMessage);
     }
 
-    private static void binaryVersion( FileMessage fileMessage ) {
-        try(Socket socket = new Socket("127.0.0.1",8085)){
-            fileMessage.sendFileMessage(socket);
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-    }
 }

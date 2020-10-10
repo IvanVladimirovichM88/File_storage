@@ -28,7 +28,7 @@ public class Client {
 
     public void connect(){
 
-        while(true){
+        while(idClient == -1){
             Scanner scanner = new Scanner(System.in);
             String name = new String();
             String password =new String();
@@ -46,7 +46,6 @@ public class Client {
 
             if (idClient > 0){
                 System.out.println( "-->  client id " + idClient);
-                break;
             }else{
                 System.out.println("-->  invalid password/name");
             }
@@ -72,5 +71,10 @@ public class Client {
             e.printStackTrace();
         }
 
+    }
+
+    public void deleteFile(Path path){
+        String fileName = path.getFileName().toString();
+        CommandMessage.sendDeleteFile(outStream, fileName);
     }
 }

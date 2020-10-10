@@ -1,5 +1,6 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.file.Files;
@@ -24,7 +25,7 @@ public class ClientHandler {
                 @Override
                 public void run() {
                     try {
-                        while (true) {
+                        while (userId == -1) {
                             byte command = in.readByte();
                             if(command == 41){  //user name and password come
                                 String[] NameWithPassword = CommandMessage.acceptAuthorized(in);
@@ -37,11 +38,10 @@ public class ClientHandler {
                                     server.addClient( ClientHandler.this );
 
                                     //проверяем существует ли для данного клиента каталог
-                                    if ( !(Files.exists(Paths.get("server/"+userId))) ){
+                                    if ( !(Files.exists(Paths.get("server/" + userId))) ){
                                         // создаем отдельную директорию для каждого клиета
-                                        Files.createDirectory(Paths.get("server/"+userId));
+                                        Files.createDirectory(Paths.get("server/" + userId));
                                     }
-                                    break;
                                 }else {
                                     out.writeInt(-1);
                                 }
@@ -59,8 +59,20 @@ public class ClientHandler {
                                 }
 
                             }else if( command == 83){ // command for show all files
-
                                 CommandMessage.sendAllFiles( AuthService.getAllFileForUser(userId),out );
+
+                            }else if( command == 68){ //command delete file
+
+                                String fileName = CommandMessage.acceptDeleteFile(in);
+                                String fileNameWithCatalog = "server/" + userId + "/" + fileName;
+                                if (AuthService.deleteFileInTable(fileNameWithCatalog,userId) > 0) {
+                                    File file = new File(fileNameWithCatalog);
+                                    file.delete();
+                                    System.out.println("--> file - "+fileNameWithCatalog+" was deleted");
+                                }else{
+                                    System.out.println( "-->  file - " + fileNameWithCatalog +" not fount");
+                                }
+
                             }
                         }
 

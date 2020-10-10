@@ -71,6 +71,21 @@ public class AuthService {
         return null;
     }
 
+    public static int  deleteFileInTable(String fileName, int userId){
+
+        String sql = String.format("DELETE FROM file_name_tbl" +
+                " WHERE user_id = '%d' AND file_name_fld = '%s';",
+                userId, fileName
+        );
+
+        try {
+            return statement.executeUpdate(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
     public static void disconnect(){
         try {
             connection.close();
