@@ -114,4 +114,12 @@ public class CommandMessage {
         }
 
     }
+
+    public static void sendDisconnect(DataOutputStream out){
+        try {
+            out.write(69);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -77,4 +77,14 @@ public class Client {
         String fileName = path.getFileName().toString();
         CommandMessage.sendDeleteFile(outStream, fileName);
     }
+
+    public void disconnect(){
+        CommandMessage.sendDisconnect(outStream);
+
+        try {
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

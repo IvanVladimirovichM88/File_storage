@@ -73,6 +73,8 @@ public class ClientHandler {
                                     System.out.println( "-->  file - " + fileNameWithCatalog +" not fount");
                                 }
 
+                            }else if (command == 69) { // command exit
+                                break;
                             }
                         }
 
