@@ -7,6 +7,7 @@ import java.nio.file.Path;
 
 public class FileMessage implements Serializable {
     private String fileName;
+    private Path path;
     private long size;
     private final int bufferLen = 1024;
     private final String serverMainCatalog = "server/";
@@ -16,6 +17,7 @@ public class FileMessage implements Serializable {
 
     public FileMessage(Path path) {
         try {
+            this.path = path;
             this.fileName = path.getFileName().toString();
             this.size = (int)Files.size(path);
         } catch (IOException e) {
@@ -37,7 +39,7 @@ public class FileMessage implements Serializable {
             out.writeLong(size);
             //send file content
             byte[] buffer = new byte[bufferLen];
-            try (InputStream in = new FileInputStream(clientMainCatalog + fileName)){
+            try (InputStream in = new FileInputStream(path.toFile())){
                 int n;
                 while ((n = in.read(buffer)) != -1){
                     out.write(buffer, 0, n);
@@ -69,6 +71,25 @@ public class FileMessage implements Serializable {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void acceptClientFileMessage(DataInputStream inputStream, Path clientPath){
+        try {
+            short lenFileName = inputStream.readShort();
+            byte[] bytesFilename = new byte[lenFileName];
+            inputStream.read(bytesFilename);
+            fileName = new String(bytesFilename);
+            size = inputStream.readLong();
+
+            try(OutputStream outFile = new BufferedOutputStream(new FileOutputStream( clientPath.toString() ))){
+                for(int i=0; i<size; i++ ){
+                    outFile.write(inputStream.read());
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getFileName() {

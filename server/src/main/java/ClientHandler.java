@@ -50,6 +50,7 @@ public class ClientHandler {
                         // come here when authorize is OK
                         while (true) {
                             byte command = in.readByte();
+
                             if (command == 70){ // command for send file
                                 FileMessage fileMessage= new FileMessage();
                                 String fileName = fileMessage.acceptFileMessage(in,userId);
@@ -72,6 +73,13 @@ public class ClientHandler {
                                 }else{
                                     System.out.println( "-->  file - " + fileNameWithCatalog +" not fount");
                                 }
+
+                            }else if(command == 69){  // command download file
+
+                                String fileName = CommandMessage.acceptDownloadFile(in);
+                                String fileNameWithCatalog = "server/" + userId + "/" + fileName;
+                                FileMessage fileMessage = new FileMessage(Paths.get(fileNameWithCatalog));
+                                fileMessage.sendFileMessage(socket);
 
                             }else if (command == 69) { // command exit
                                 break;

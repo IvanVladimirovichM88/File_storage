@@ -53,6 +53,25 @@ public class Client {
 
     }
 
+    public void connect(String name, String password){
+        while(idClient == -1){
+
+            CommandMessage.sendAuthorized(name,password,outStream);
+
+            try {
+                idClient =  inStream.readInt();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (idClient > 0){
+                System.out.println( "-->  client id " + idClient);
+            }else{
+                System.out.println("-->  invalid password/name");
+            }
+        }
+    }
+
     public void sendFile(Path path){
         FileMessage fileMessage = new FileMessage(path);
         fileMessage.sendFileMessage(socket);
@@ -73,9 +92,27 @@ public class Client {
 
     }
 
+    String[] getAllFilesInStorage(){
+        CommandMessage.requestAllFiles(outStream);
+
+        try {
+            return CommandMessage.acceptAllFiles(inStream);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
     public void deleteFile(Path path){
         String fileName = path.getFileName().toString();
         CommandMessage.sendDeleteFile(outStream, fileName);
+    }
+
+    public void downloadFile(Path path, Path clientPath){
+        String fileName = path.getFileName().toString();
+        CommandMessage.requestDownloadFile(outStream,fileName);
+
+        FileMessage fileMessage = new FileMessage();
+        fileMessage.acceptClientFileMessage(inStream,clientPath);
     }
 
     public void disconnect(){

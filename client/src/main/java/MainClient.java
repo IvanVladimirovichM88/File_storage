@@ -9,7 +9,8 @@ import  javax.swing.*;
 public class MainClient {
     public static void main(String[] args) {
 
-        new MyWindow();
+        Client client = new Client();
+        new MyWindow(client);
 
 //        Client client = new Client();
 //        //подключение и авторизация клиента
