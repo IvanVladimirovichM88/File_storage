@@ -74,7 +74,7 @@ public class ClientHandler {
                                     System.out.println( "-->  file - " + fileNameWithCatalog +" not fount");
                                 }
 
-                            }else if(command == 69){  // command download file
+                            }else if(command == 87){  // command download file
 
                                 String fileName = CommandMessage.acceptDownloadFile(in);
                                 String fileNameWithCatalog = "server/" + userId + "/" + fileName;
@@ -82,7 +82,11 @@ public class ClientHandler {
                                 fileMessage.sendFileMessage(socket);
 
                             }else if (command == 69) { // command exit
+
                                 break;
+                            }else{
+
+                                System.out.println("Accept unknown command");
                             }
                         }
 

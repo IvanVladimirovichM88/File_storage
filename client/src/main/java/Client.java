@@ -53,23 +53,17 @@ public class Client {
 
     }
 
-    public void connect(String name, String password){
-        while(idClient == -1){
+    public int connect (String name, String password){
 
-            CommandMessage.sendAuthorized(name,password,outStream);
+        CommandMessage.sendAuthorized(name,password,outStream);
 
-            try {
-                idClient =  inStream.readInt();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            if (idClient > 0){
-                System.out.println( "-->  client id " + idClient);
-            }else{
-                System.out.println("-->  invalid password/name");
-            }
+        try {
+            idClient =  inStream.readInt();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        return idClient;
+
     }
 
     public void sendFile(Path path){
@@ -107,8 +101,9 @@ public class Client {
         CommandMessage.sendDeleteFile(outStream, fileName);
     }
 
-    public void downloadFile(Path path, Path clientPath){
-        String fileName = path.getFileName().toString();
+    public void downloadFile(Path storagePath, Path clientPath){
+
+        String fileName = storagePath.getFileName().toString();
         CommandMessage.requestDownloadFile(outStream,fileName);
 
         FileMessage fileMessage = new FileMessage();

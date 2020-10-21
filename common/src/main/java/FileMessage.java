@@ -11,7 +11,8 @@ public class FileMessage implements Serializable {
     private long size;
     private final int bufferLen = 1024;
     private final String serverMainCatalog = "server/";
-    private final String clientMainCatalog = "client/";
+    private  static String ENCODING = "windows-1251";
+            
 
     public FileMessage(){}
 
@@ -32,13 +33,15 @@ public class FileMessage implements Serializable {
             //send command byte
             out.write(70);
             //send len of file name
+            short len = (short)fileName.length();
             out.writeShort((short)fileName.length());
             //send file name
-            out.write(fileName.getBytes());
+            byte[] arrByteName = fileName.getBytes(ENCODING);
+            out.write(fileName.getBytes(ENCODING));
             //send len of file
             out.writeLong(size);
             //send file content
-            byte[] buffer = new byte[bufferLen];
+           byte[] buffer = new byte[bufferLen];
             try (InputStream in = new FileInputStream(path.toFile())){
                 int n;
                 while ((n = in.read(buffer)) != -1){
@@ -55,7 +58,8 @@ public class FileMessage implements Serializable {
             short lenFileName = inputStream.readShort();
             byte[] bytesFilename = new byte[lenFileName];
             inputStream.read(bytesFilename);
-            fileName = new String(bytesFilename);
+            fileName = new String(bytesFilename, ENCODING);
+
             size = inputStream.readLong();
             //проверяем существует ли каталог для пользователя
 
@@ -78,7 +82,6 @@ public class FileMessage implements Serializable {
             short lenFileName = inputStream.readShort();
             byte[] bytesFilename = new byte[lenFileName];
             inputStream.read(bytesFilename);
-            fileName = new String(bytesFilename);
             size = inputStream.readLong();
 
             try(OutputStream outFile = new BufferedOutputStream(new FileOutputStream( clientPath.toString() ))){

@@ -5,6 +5,8 @@ import java.util.List;
 
 public class CommandMessage {
 
+    private static String ENCODING = "windows-1251";
+
     public static void sendAuthorized(String userName, String userPassword, DataOutputStream out){
         try {
             //send command byte
@@ -48,7 +50,7 @@ public class CommandMessage {
 
         for (String s : fileNames) {
             out.writeInt(s.length());
-            out.write(s.getBytes());
+            out.write(s.getBytes(ENCODING));
         }
     }
 
@@ -62,7 +64,7 @@ public class CommandMessage {
                 lenFileName = in.readInt();
                 byte[] byteFileName = new byte [lenFileName];
                 in.read(byteFileName);
-                allFileNames[i] = new String(byteFileName);
+                allFileNames[i] = new String(byteFileName,ENCODING);
             }
             return allFileNames;
         }
@@ -95,7 +97,7 @@ public class CommandMessage {
             lenFileName = in.readShort();
             byte[] byteFileName = new byte[lenFileName];
             in.read(byteFileName);
-            fileName = new String(byteFileName);
+            fileName = new String(byteFileName,ENCODING);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -107,7 +109,7 @@ public class CommandMessage {
 
             out.writeByte(68);
             out.writeShort((short) fileName.length());
-            out.write(fileName.getBytes());
+            out.write(fileName.getBytes(ENCODING));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -117,9 +119,10 @@ public class CommandMessage {
 
     public static void requestDownloadFile(DataOutputStream out,  String fileName){
         try {
+            //send command to download file "87"
             out.writeByte(87);
             out.writeShort((short) fileName.length());
-            out.write(fileName.getBytes());
+            out.write(fileName.getBytes(ENCODING));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -132,7 +135,7 @@ public class CommandMessage {
             lenFileName = in.readShort();
             byte[] byteFileName = new byte[lenFileName];
             in.read(byteFileName);
-            fileName = new String(byteFileName);
+            fileName = new String(byteFileName,ENCODING);
         } catch (IOException e) {
             e.printStackTrace();
         }
